@@ -34,7 +34,7 @@ public class MealServiceImpl implements MealService {
 
         // Проверяем есть ли уже такое блюдо в базе данных
         if (getMealByName(mealDto.getName()).isPresent()) {
-            throw new DuplicatedDataException("Блюдо с названием " + mealDto.getName() + " уже существует.");
+            throw new DuplicatedDataException("Блюдо с названием '" + mealDto.getName() + "' уже существует.");
         }
 
         Meal savedMeal = mealRepository.save(MealMapper.mapMealDtoToMeal(mealDto));
@@ -42,7 +42,6 @@ public class MealServiceImpl implements MealService {
         return MealMapper.mapMealToMealShortDto(savedMeal);
     }
 
-    @Transactional(readOnly = true)
     private Optional<Meal> getMealByName(String name) {
         log.debug("Проверяем есть ли в базе данных блюдо с названием {}.", name);
         return mealRepository.findByName(name);
