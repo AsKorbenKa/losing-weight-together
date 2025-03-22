@@ -1,0 +1,39 @@
+services:
+  gateway:
+    build: gateway
+    image: lwt-gateway
+    container_name: lwt-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - server
+    environment:
+      - LWT_SERVER_URL=http://server:9090
+
+  server:
+    build: server
+    image: lwt-server
+    container_name: lwt-server
+    ports:
+      - "9090:9090"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/lwt
+      - SPRING_DATASOURCE_USERNAME=lwt
+      - SPRING_DATASOURCE_PASSWORD=lwt
+
+  db:
+    image: postgres:16.1
+    container_name: lwt-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=lwt
+      - POSTGRES_USER=lwt
+      - POSTGRES_DB=lwt
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
